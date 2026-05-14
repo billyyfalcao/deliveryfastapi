@@ -31,7 +31,14 @@ class Usuario(Base):
         self.ativo = ativo
         self.admin = admin
 
+class Pedido(Base):
+    __tablename__ = "pedidos"
+        
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    status = Column("status", String) #PENDENTE, FINALIZADO, CANCELADO 
+    usuario = Column("usuario", ForeignKey("usuario.id"))
+    preco = Column("preco", Float)
 
-
+    
 
 #executar a criação dos metadados do seu banco (cria efetivamente o banco de dados)
