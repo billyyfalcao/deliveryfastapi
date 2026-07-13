@@ -5,7 +5,7 @@ def pegar_sessao():
     try: 
          Session = sessionmaker  (bind = db) 
          session = Session()
-         return session 
+         yield session 
     finally:
          session.close()
     
