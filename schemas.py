@@ -1,5 +1,5 @@
 from pydantic import BaseModel 
-from typing import Optional 
+from typing import Optional
 
 class UsuarioSchema (BaseModel):
     nome: str 
@@ -10,4 +10,12 @@ class UsuarioSchema (BaseModel):
     admin: Optional [bool]
 
     class config:
+        from_attributes = True 
+
+
+
+class PedidoSchema (BaseModel):
+    usuario: int
+    
+    class config: 
         from_attributes = True 
