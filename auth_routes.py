@@ -1,4 +1,5 @@
 from http import HTTPStatus
+import time
 from models import Usuario
 from fastapi import APIRouter, Depends, HTTPException
 from dependencies import pegar_sessao
@@ -10,8 +11,8 @@ from datetime import datetime, timedelta, timezone
 
 auth_router = APIRouter (prefix= "/auth", tags= ["auth"])
 
-def criar_token (id_usuario):
-    data_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES)
+def criar_token (id_usuario, duracao_token = timedelta(minutes=ACCES_TOKEN_EXPIRE_MINUTES)):
+    data_expiracao = datetime.now(timezone.utc) + duracao_token
     dic_info = {"sub":id_usuario, "exp": data_expiracao}
     jwt_encode = jwt.encode(dic_info, SECRET_KEY, ALGORITHM)
     return jwt_encode
@@ -57,8 +58,10 @@ async def login (login_schema: LoginSchema, session: Session = Depends(pegar_ses
         raise HTTPException (status_code=400, detail="Usuario não encontrado, verifique se as credenciais estão corretas")
     else:
         access_token = criar_token(usuario.id)
+        refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
         return {
             "access_token": access_token,
+            "refresh_token": refresh_token,
             "token_type": "Bearer"
         }
 
