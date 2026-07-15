@@ -1,5 +1,4 @@
 from http import HTTPStatus
-import time
 from models import Usuario
 from fastapi import APIRouter, Depends, HTTPException
 from dependencies import pegar_sessao
