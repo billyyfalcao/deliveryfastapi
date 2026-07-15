@@ -1,3 +1,4 @@
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel 
 from typing import Optional
 
@@ -27,3 +28,6 @@ class LoginSchema (BaseModel):
 
     class config: 
         from_attributes = True 
+
+
+ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/login")

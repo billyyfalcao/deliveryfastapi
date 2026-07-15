@@ -1,12 +1,15 @@
+
 from http import HTTPStatus
 from models import Usuario
 from fastapi import APIRouter, Depends, HTTPException
-from dependencies import pegar_sessao
+from fastapi.security import OAuth2PasswordBearer
+from dependencies import pegar_sessao, verificar_token
 from main import SECRET_KEY, bcrypt_context, ACCES_TOKEN_EXPIRE_MINUTES, ALGORITHM
 from schemas import LoginSchema, UsuarioSchema
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
+
 
 auth_router = APIRouter (prefix= "/auth", tags= ["auth"])
 
@@ -15,6 +18,7 @@ def criar_token (id_usuario, duracao_token = timedelta(minutes=ACCES_TOKEN_EXPIR
     dic_info = {"sub":id_usuario, "exp": data_expiracao}
     jwt_encode = jwt.encode(dic_info, SECRET_KEY, ALGORITHM)
     return jwt_encode
+
 
 
 def autenticar_usuario (email, senha, session):
@@ -57,14 +61,19 @@ async def login (login_schema: LoginSchema, session: Session = Depends(pegar_ses
         raise HTTPException (status_code=400, detail="Usuario não encontrado, verifique se as credenciais estão corretas")
     else:
         access_token = criar_token(usuario.id)
-        refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
+        #refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
         return {
             "access_token": access_token,
-            "refresh_token": refresh_token,
+           # "refresh_token": refresh_token,
             "token_type": "Bearer"
         }
 
- 
-    
 
-        
+@auth_router.get ("/refresh")
+async def use_refresh_token (usuario_id: Usuario = Depends(verificar_token)):
+    refresh_token = criar_token(usuario_id, duracao_token=timedelta(days=7))
+
+    return{
+        "access_token": refresh_token,
+        "token_type": "bearer"
+    }
