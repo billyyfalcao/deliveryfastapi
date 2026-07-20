@@ -30,4 +30,11 @@ class LoginSchema (BaseModel):
         from_attributes = True 
 
 
-ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+class ItemPedidoSchema(BaseModel):
+    quantidade: int 
+    sabor: str 
+    tamanho: str 
+    preco_unit: float
+
+    class config: 
+        from_attributes = True 

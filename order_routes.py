@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from dependencies import pegar_sessao, verificar_token
-from schemas import PedidoSchema
+from schemas import PedidoSchema, ItemPedidoSchema
 from models import Pedido, Usuario
 
 order_router = APIRouter (prefix= "/pedidos", tags = ["pedidos"])
@@ -23,7 +23,7 @@ async def criar_pedido(pedido_schema: PedidoSchema, session: Session = Depends (
     return {"mensagem:": f"Pedido registrado com sucesso! Id do pedido: {novo_pedido.id}"}
 
 
-@order_router.post ("/pedido/cancelar/ {novo_id.id}")
+@order_router.post ("/pedido/cancelar/{id_pedido}")
 async def cancelar_pedido (id_pedido: int, session: Session = Depends(pegar_sessao), usuario:Usuario = Depends (verificar_token)):
     pedido = session.query(Pedido).filter(Pedido.id == id_pedido).first()
     if not pedido:
@@ -48,3 +48,7 @@ async def listar_pedidos (session: Session = Depends(pegar_sessao), usuario: Usu
         return {
             "pedidos": pedidos
         }
+
+
+#@order_router.post("/pedido/adicionar/{id_pedido}")
+#async def adicionar_item_pedido(item_pedido_schema: ItemPedidoSchema, session: Session = Depends(pegar_sessao), usuario: Usuario =Depends(verificar_token)):
