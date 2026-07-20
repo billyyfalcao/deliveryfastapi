@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey
+from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey, desc
 from sqlalchemy.orm import declarative_base 
-from sqlalchemy_utils.types import ChoiceType
+
 
 #para criar conexão com o banco
 db = create_engine ("sqlite:///banco.db")
@@ -42,11 +42,15 @@ class Pedido(Base):
     status = Column("status", String) #PENDENTE, FINALIZADO, CANCELADO 
     usuario = Column("usuario", ForeignKey("usuarios.id"))
     preco = Column("preco", Float)
+    
 
-    def __init__(self, usuario, status="PENDENTE", preco=0):
+    def __init__(self, usuario, status="PENDENTE", preco=0,):
         self.usuario = usuario 
         self.preco = preco
         self.status = status
+      
+
+        
 
 
 class ItemPedido (Base):
@@ -58,6 +62,7 @@ class ItemPedido (Base):
     tamanho = Column ("tamanho", String)
     preco_unit = Column ("preco_unit", Float)
     pedido = Column ("pedido", ForeignKey ("pedidos.id"))
+    
 
     def __init__ (self, quantidade, sabor, tamanho, preco_unit, pedido):
        self.quantidade = quantidade
@@ -65,5 +70,6 @@ class ItemPedido (Base):
        self.tamanho = tamanho 
        self.preco_unit = preco_unit
        self.pedido = pedido
+     
        
 #executar a criação dos metadados do seu banco (cria efetivamente o banco de dados)
