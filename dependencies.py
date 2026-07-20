@@ -4,7 +4,8 @@ from models import Usuario
 from fastapi import Depends, HTTPException, security
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from main import SECRET_KEY, ALGORITHM
+from main import SECRET_KEY, ALGORITHM, oauth2_schema
+
 
 
 
@@ -20,28 +21,17 @@ def pegar_sessao():
 
 ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def verificar_token (token: str = Depends(ouath2_scheme), session:Session= Depends(pegar_sessao)):
 
-    usuario_id = session.query(Usuario).filter(Usuario.id).first()
 
+def verificar_token (token: str = Depends(oauth2_schema), session:Session= Depends(pegar_sessao)):
+
+    
     try:
-        payload = jwt.decode(
-            token, 
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
-
-        usuario_id = payload.get("sub")
-
-        if usuario_id is None:
-            raise HTTPException(
-                status_code=401, detail="Token invalido"
-            )
-
-                                    
-        return usuario_id
-
+        dic_info = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+        id_usuario = int (dic_info.get("sub"))
     except JWTError: 
-        raise HTTPException(
-            status_code=401, detail="token inválido"
-        ) 
+        raise HTTPException(status_code=401, detail="token inválido") 
+    usuario = session.query(Usuario).filter(Usuario.id == id_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=401, detail ="Acesso Inválido")
+    return usuario 
