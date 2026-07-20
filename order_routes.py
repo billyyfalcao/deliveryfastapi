@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from dependencies import pegar_sessao
 from schemas import PedidoSchema
@@ -21,3 +21,18 @@ async def criar_pedido(pedido_schema: PedidoSchema, session: Session = Depends (
     session.add (novo_pedido)
     session.commit()
     return {"mensagem:": f"Pedido registrado com sucesso! Id do pedido: {novo_pedido.id}"}
+
+
+@order_router.post ("/pedido/cancelar/ {novo_id.id}")
+async def cancelar_pedido (id_pedido: int, session: Session = Depends(pegar_sessao)):
+    pedido = session.query(Pedido).filter(Pedido.id == id_pedido).first()
+    if not pedido:
+        raise HTTPException(status_code=400, DETAIL = "Pedido não encontrado")
+    pedido.status = "CANCELADO" 
+    session.commit()
+    return {
+        "mensagem": f"pedido numerp {id_pedido} cancelado com sucesso>" ,
+        "pedido": pedido 
+
+    }
+                    
