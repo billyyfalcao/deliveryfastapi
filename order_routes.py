@@ -33,8 +33,18 @@ async def cancelar_pedido (id_pedido: int, session: Session = Depends(pegar_sess
     pedido.status = "CANCELADO" 
     session.commit()
     return {
-        "mensagem": f"pedido numero {id_pedido} cancelado com sucesso>" ,
-        "pedido": id_pedido 
+        "mensagem": f"pedido numero {pedido.id} cancelado com sucesso>" ,
+        "pedido": pedido  
 
     }
-                    
+
+
+@order_router.get ("/listar")
+async def listar_pedidos (session: Session = Depends(pegar_sessao), usuario: Usuario = Depends (verificar_token)):
+    if not usuario.admin:
+        raise HTTPException(status_code=401, detail= "Você não tem autorização para visualizar os pedidos")
+    else: 
+        pedidos = session.query (Pedido).all()
+        return {
+            "pedidos": pedidos
+        }
