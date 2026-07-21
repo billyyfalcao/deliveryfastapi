@@ -59,8 +59,9 @@ async def adicionar_item_pedido(id_pedido:int, item_pedido_schema: ItemPedidoSch
         raise HTTPException(status_code=401, detail="Você não possui autorização para adicionar itens a este pedido!")
     item_pedido = ItemPedido(item_pedido_schema.quantidade, item_pedido_schema.sabor,item_pedido_schema.tamanho,item_pedido_schema.preco_unit, id_pedido)
 
-    pedido.calcular_preco()
+    
     session.add(item_pedido)
+    pedido.calcular_preco()
     session.commit()
     return{
         "messagem": "Item criado com sucesso",
