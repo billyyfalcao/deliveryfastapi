@@ -74,7 +74,7 @@ async def remover_item_pedido(id_item_pedido:int, session: Session = Depends(peg
     item_pedido = session.query(ItemPedido).filter(ItemPedido.id==id_item_pedido).first()
     if not item_pedido: 
         raise HTTPException(status_code=404, detail="Item do pedido não existente")
-    if not usuario.admin and usuario.id != item_pedido.usuario:
+    if not usuario.admin and usuario.id != item_pedido.pedido.usuario:
         raise HTTPException(status_code=403, detail="Você não possui autorização para remover itens a este pedido!")
 
 
