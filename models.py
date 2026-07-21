@@ -66,6 +66,7 @@ class ItemPedido (Base):
     tamanho = Column ("tamanho", String)
     preco_unit = Column ("preco_unit", Float)
     pedido = Column ("pedido", ForeignKey ("pedidos.id"))
+    itens =  relationship("Pedido", cascade="all, delete")
     
 
     def __init__ (self, quantidade, sabor, tamanho, preco_unit, pedido):

@@ -69,19 +69,19 @@ async def adicionar_item_pedido(id_pedido:int, item_pedido_schema: ItemPedidoSch
         "preco_pedido": pedido.preco
     }
     
-@order_router.post("/pedido/remover/{id_item_pedido}")
+@order_router.delete("/pedido/remover/{id_item_pedido}")
 async def remover_item_pedido(id_item_pedido:int, session: Session = Depends(pegar_sessao), usuario: Usuario =Depends(verificar_token)):
     item_pedido = session.query(ItemPedido).filter(ItemPedido.id==id_item_pedido).first()
     if not item_pedido: 
-        raise HTTPException(status_code=400, detail="Pedido não existente")
+        raise HTTPException(status_code=404, detail="Item do pedido não existente")
     if not usuario.admin and usuario.id != item_pedido.usuario:
-        raise HTTPException(status_code=401, detail="Você não possui autorização para remover itens a este pedido!")
+        raise HTTPException(status_code=403, detail="Você não possui autorização para remover itens a este pedido!")
 
-   
+
     session.delete(item_pedido)
     session.commit()
     return{
-        "messagem": "Item removido com sucesso",
+        "mensagem": "Item removido com sucesso",
         "item_id": id_item_pedido,
         "preco_pedido": item_pedido.preco_unit
     }
