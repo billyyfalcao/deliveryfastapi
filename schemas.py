@@ -37,3 +37,13 @@ class ItemPedidoSchema(BaseModel):
 
     class config: 
         from_attributes = True 
+
+
+class ResponsePedidoSchema(BaseModel):
+    id:int 
+    status:str 
+    preco:float
+    itens: list[ItemPedidoSchema]
+
+    class config: 
+            from_attributes = True 
